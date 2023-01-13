@@ -15,3 +15,12 @@ export class AuthSignUpDto {
   @IsSwaggerString({ default: 'Lê Huy Du' })
   fullName: string;
 }
+
+export class AuthSignInDto {
+  @IsSwaggerString({ default: 'dulh181199@gmail.com' })
+  @IsEmail()
+  credential: string;
+
+  @IsSwaggerString({ default: 'du@dev1234' })
+  password: string;
+}
