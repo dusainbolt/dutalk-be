@@ -4,6 +4,7 @@ export interface IConfig {
   server: IConfigServer;
   database: IConfigDatabase;
   mail: IConfigMail;
+  redis: IConfigRedis;
 }
 
 export enum Env {
@@ -16,6 +17,12 @@ export enum Env {
 export interface IConfigJwt {
   secretKey: string;
   expireIns: string;
+}
+
+export interface IConfigRedis {
+  host: string;
+  port: string;
+  ttlOtp: number;
 }
 
 export interface IConfigMail {

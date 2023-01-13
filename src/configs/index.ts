@@ -30,6 +30,12 @@ const config: IConfig = {
     user: process.env.MAIL_USER,
     password: process.env.MAIL_PASSWORD,
   },
+
+  redis: {
+    host: process.env.REDIS_HOST,
+    port: process.env.REDIS_PORT,
+    ttlOtp: parseInt(process.env.REDIS_TTL_OTP),
+  },
 };
 
 export const configuration = (): IConfig => config;
