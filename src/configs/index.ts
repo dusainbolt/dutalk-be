@@ -26,13 +26,6 @@ const config: IConfig = {
     secretKey: process.env.JWT_SECRET_KEY,
     expireIns: process.env.JWT_EXPIRATION_TIME,
   },
-
-  web3: {
-    providerUrl: process.env.WEB3_PROVIDER_URL,
-    privateKeyAdmin: process.env.WEB3_PRIVATE_KEY_ADMIN,
-    publicKeyAdmin: process.env.WEB3_PUBLIC_KEY_ADMIN,
-    soulBoundAddress: process.env.WEB3_SOUL_BOUND_ADDRESS,
-  },
 };
 
 export const configuration = (): IConfig => config;

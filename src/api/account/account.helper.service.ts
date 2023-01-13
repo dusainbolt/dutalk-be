@@ -11,6 +11,10 @@ export class AccountHelper {
     return await this.accountRepo.findOneBy(filter);
   }
 
+  async findAccountWhere(filter: FindOptionsWhere<Account>[] | FindOptionsWhere<Account>): Promise<Account> {
+    return await this.accountRepo.findOne({ where: filter });
+  }
+
   async insertAccount(data: DeepPartial<Account>): Promise<Account> {
     return await this.accountRepo.save(data);
   }

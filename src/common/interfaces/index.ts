@@ -1,4 +1,3 @@
-export * from './jwt.interface';
 export * from './config.interface';
 export * from './entity.interface';
 export * from './error.interface';

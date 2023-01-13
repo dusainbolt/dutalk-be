@@ -42,25 +42,9 @@ export const ERROR: Record<ERROR_CODE, AppError> = {
     message: 'User not active',
     status: HttpStatus.FORBIDDEN,
   },
-  // [ERROR_CODE.ACCOUNT_PASSWORD_FORMAT_INVALID]: {
-  //   code: '2000',
-  //   message: 'Password should have 1 uppercase, 1 lowercase, 1 number and between 8 and 30 characters',
-  //   status: HttpStatus.BAD_REQUEST,
-  // },
-  // [ERROR_CODE.ACCOUNT_EMAIL_ALREADY_REGISTER]: {
-  //   code: '2001',
-  //   message: 'The email is already registered',
-  //   status: HttpStatus.BAD_REQUEST,
-  // },
-  // [ERROR_CODE.ACCOUNT_PHONE_NUMBER_ALREADY_REGISTER]: {
-  //   code: '2002',
-  //   message: 'The phone number is already registered',
-  //   status: HttpStatus.BAD_REQUEST,
-  // },
-  // // WALLET 3xxx
-  // [ERROR_CODE.WALLET_ADDRESS_ALREADY_REGISTER]: {
-  //   code: '3000',
-  //   message: 'The wallet address is already registered',
-  //   status: HttpStatus.BAD_REQUEST,
-  // },
+  [ERROR_CODE.ACCOUNT_USERNAME_EMAIL_ALREADY_REGISTER]: {
+    code: '1001',
+    message: 'username or email is already exist',
+    status: HttpStatus.OK,
+  },
 };

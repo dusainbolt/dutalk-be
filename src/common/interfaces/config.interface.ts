@@ -3,7 +3,6 @@ export interface IConfig {
   jwt: IConfigJwt;
   server: IConfigServer;
   database: IConfigDatabase;
-  web3: IConfigWeb3;
 }
 
 export enum Env {
@@ -11,13 +10,6 @@ export enum Env {
   DEVELOPMENT = 'development',
   STAGING = 'staging',
   PRODUCTION = 'production',
-}
-
-export interface IConfigWeb3 {
-  providerUrl: string;
-  privateKeyAdmin: string;
-  publicKeyAdmin: string;
-  soulBoundAddress: string;
 }
 
 export interface IConfigJwt {

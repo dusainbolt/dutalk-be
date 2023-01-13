@@ -1,39 +1,23 @@
-import { Expose } from 'class-transformer';
-import { BaseEntity, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from 'typeorm';
-import { Role } from './jwt.interface';
+import { BaseEntity, Column, CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 export abstract class AbstractEntity extends BaseEntity {
   @PrimaryGeneratedColumn({ type: 'int' })
   id: number;
 
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
+  /**
+   * Creation date is generated and inserted only once,
+   * at the first time when you create an object, the value is inserted into the table, and is never touched again.
+   */
+  @CreateDateColumn({ name: 'created_On' })
+  createdOn: Date;
 
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
-}
+  @Column({ name: 'created_by', default: 'SA', length: 255 })
+  createdBy: string;
 
-export abstract class AbstractEntityD extends AbstractEntity {
-  @DeleteDateColumn({ name: 'deleted_at' })
-  @Expose({ groups: [Role.ADMIN] })
-  deletedAt?: Date;
-}
+  // This date is being updated each time you persist the object.
+  @UpdateDateColumn({ name: 'updated_On' })
+  updatedOn: Date;
 
-export abstract class AbstractAdminEntity extends BaseEntity {
-  @PrimaryGeneratedColumn({ type: 'int' })
-  id: number;
-
-  @CreateDateColumn({ name: 'created_at' })
-  @Expose({ groups: [Role.ADMIN] })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  @Expose({ groups: [Role.ADMIN] })
-  updatedAt: Date;
-}
-
-export abstract class AbstractAdminEntityD extends AbstractAdminEntity {
-  @DeleteDateColumn({ name: 'deleted_at' })
-  @Expose({ groups: [Role.ADMIN] })
-  deletedAt?: Date;
+  @Column({ name: 'updated_by', default: 'SA', length: 255 })
+  updatedBy: string;
 }
