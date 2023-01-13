@@ -6,6 +6,11 @@ export interface AppError {
   status: HttpStatus;
 }
 
+export enum ErrorType {
+  APP_ERROR = 'app_error',
+  SERVER_ERROR = 'server_error',
+}
+
 export enum ERROR_CODE {
   // TEST
   ERROR_CODE_TEST = 'ERROR_CODE_TEST',

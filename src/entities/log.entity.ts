@@ -1,5 +1,5 @@
 import { ENTITY_NAME } from 'src/common/constant';
-import { AbstractEntity } from 'src/common/interfaces';
+import { AbstractEntity, ErrorType } from 'src/common/interfaces';
 import { Column, Entity } from 'typeorm';
 
 @Entity(ENTITY_NAME.LOG)
@@ -15,4 +15,7 @@ export class Log extends AbstractEntity {
 
   @Column({ type: 'text', name: 'error', nullable: true })
   error: string;
+
+  @Column({ type: 'enum', enum: Object.values(ErrorType) })
+  type: ErrorType;
 }

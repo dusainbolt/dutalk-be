@@ -1,10 +1,19 @@
-import { ArgumentsHost, BadRequestException, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
+import {
+  ArgumentsHost,
+  BadRequestException,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+  HttpServer,
+  HttpStatus,
+} from '@nestjs/common';
+import { BaseExceptionFilter } from '@nestjs/core';
 import { Response } from 'express';
 import { getReasonPhrase } from 'http-status-codes';
 import { isArray } from 'lodash';
 import { Logger } from 'nestjs-pino';
 import { ERROR } from 'src/common/errors';
-import { ERROR_CODE, RequestUser } from 'src/common/interfaces';
+import { ErrorType, ERROR_CODE, RequestUser } from 'src/common/interfaces';
 import { Log } from 'src/entities/log.entity';
 
 export class AppException extends HttpException {
@@ -17,34 +26,41 @@ export class AppException extends HttpException {
   }
 }
 
-@Catch(HttpException)
-export class HttpExceptionFilter implements ExceptionFilter {
-  constructor(private readonly _logger: Logger) {}
+@Catch()
+export class AppExceptionFilter extends BaseExceptionFilter {
+  constructor(private readonly _logger: Logger, applicationRef?: HttpServer) {
+    super(applicationRef);
+  }
 
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<RequestUser>();
 
-    if (exception instanceof AppException) {
-      const log = new Log();
-      if (request.body.password) delete request.body.password;
-      log.requestPath = request.url;
-      log.userId = (request as any).user?.sub || undefined;
-      log.input = JSON.stringify({ query: request.query, body: request.body });
-      log.error = JSON.stringify(exception);
-      log.save();
-    }
-
+    const log = new Log();
+    if (request.body.password) delete request.body.password;
+    log.requestPath = request.url;
+    log.userId = (request as any).user?.sub || undefined;
+    log.input = JSON.stringify({ query: request.query, body: request.body });
+    log.error = JSON.stringify(exception);
+    log.type = exception instanceof AppException ? ErrorType.APP_ERROR : ErrorType.SERVER_ERROR;
+    log.save();
+    console.log('exception exception', exception);
     const status = exception.getStatus ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
+    let message = '';
+    if (exception?.getResponse) {
+      message =
+        typeof exception.getResponse() === 'object'
+          ? (exception.getResponse() as any).message
+          : exception.getResponse();
+    } else {
+      message = exception.toString();
+    }
     const errorResponse = {
       status,
       data: {
         error: getReasonPhrase(status),
-        message:
-          typeof exception.getResponse() === 'object'
-            ? (exception.getResponse() as any).message
-            : exception.getResponse(),
+        message,
         errorCode:
           exception instanceof BadRequestException
             ? HttpStatus.BAD_REQUEST.toString()

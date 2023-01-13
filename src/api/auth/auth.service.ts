@@ -2,8 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { ERROR_CODE, IConfigJwt } from 'src/common/interfaces';
+import { Generate } from 'src/common/utils/generate.utils';
 import { JWTUtils } from 'src/common/utils/jwt.utils';
 import { Security } from 'src/common/utils/security.utils';
+import { MailService } from 'src/mail/mail.service';
 import { AppException } from 'src/middleware';
 import { AccountHelper } from '../account/account.helper.service';
 import { AuthSignInDto, AuthSignUpDto } from './auth.dto';
@@ -14,6 +16,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly accountHelper: AccountHelper,
     private readonly configService: ConfigService,
+    private readonly mailService: MailService,
   ) {
     this.jwt = this.configService.get('jwt');
   }
@@ -27,6 +30,8 @@ export class AuthService {
     }
     const password = await Security.hashBcrypt(body.password);
     const account = await this.accountHelper.insertAccount({ email, username, password, fullName });
+    const otpRegister = Generate.otp();
+    await this.mailService.sendOtpRegister(account, otpRegister);
     return account;
   }
 

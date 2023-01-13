@@ -3,6 +3,7 @@ export interface IConfig {
   jwt: IConfigJwt;
   server: IConfigServer;
   database: IConfigDatabase;
+  mail: IConfigMail;
 }
 
 export enum Env {
@@ -15,6 +16,11 @@ export enum Env {
 export interface IConfigJwt {
   secretKey: string;
   expireIns: string;
+}
+
+export interface IConfigMail {
+  user: string;
+  password: string;
 }
 
 export interface IConfigServer {

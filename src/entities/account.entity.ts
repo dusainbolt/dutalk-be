@@ -17,7 +17,7 @@ export class Account extends AbstractEntity {
   @Column({ type: 'varchar', name: 'password', default: null })
   password: string;
 
-  @Column({ type: 'enum', enum: Object.values(AccountStatus), default: AccountStatus.ACTIVE })
+  @Column({ type: 'enum', enum: Object.values(AccountStatus), default: AccountStatus.NOT_VERIFY })
   status: AccountStatus;
 
   @Column({ type: 'enum', enum: Object.values(AccountRole), default: AccountRole.USER })
