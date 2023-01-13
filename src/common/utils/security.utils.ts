@@ -7,4 +7,8 @@ export class Security {
     // now we set user password to hashed password
     return await bcrypt.hash(text, saltHash);
   };
+
+  static compareBcrypt = async (plaintext, hash): Promise<boolean> => {
+    return await bcrypt.compare(plaintext, hash);
+  };
 }

@@ -47,4 +47,9 @@ export const ERROR: Record<ERROR_CODE, AppError> = {
     message: 'username or email is already exist',
     status: HttpStatus.OK,
   },
+  [ERROR_CODE.ACCOUNT_NOT_FOUND]: {
+    code: '1002',
+    message: 'User not found',
+    status: HttpStatus.OK,
+  },
 };
