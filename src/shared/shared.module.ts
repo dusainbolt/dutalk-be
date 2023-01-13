@@ -1,11 +1,12 @@
-import { Global, Module, RequestMethod } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { CacheModule, CacheStore, Global, Module, RequestMethod } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LoggerModule } from 'nestjs-pino';
 import { Env, LogLevel } from 'src/common/interfaces';
-import { configuration } from 'src/configs';
+import config, { configuration } from 'src/configs';
 import { TypeOrmConfigService } from 'src/configs/database';
 import { v4 } from 'uuid';
+import * as redisStore from 'cache-manager-redis-store';
 
 @Global()
 @Module({
@@ -22,6 +23,21 @@ import { v4 } from 'uuid';
 
     TypeOrmModule.forRootAsync({
       useClass: TypeOrmConfigService,
+    }),
+
+    CacheModule.register({
+      isGlobal: true,
+      store: redisStore,
+      host: 'localhost',
+      port: 6379,
+      // ttl: 600,
+    }),
+
+    CacheModule.register({
+      isGlobal: true,
+      store: redisStore,
+      host: config.redis.host,
+      port: config.redis.port,
     }),
 
     LoggerModule.forRoot({
