@@ -26,6 +26,10 @@ const config: IConfig = {
     secretKey: process.env.JWT_SECRET_KEY,
     expireIns: process.env.JWT_EXPIRATION_TIME,
   },
+  mail: {
+    user: process.env.MAIL_USER,
+    password: process.env.MAIL_PASSWORD,
+  },
 };
 
 export const configuration = (): IConfig => config;

@@ -1,11 +1,12 @@
 export enum AccountStatus {
+  NOT_VERIFY = 'not_verify',
   ACTIVE = 'active',
   INACTIVE = 'inactive',
 }
 
 export enum AccountRole {
-  USER = 'USER',
-  ADMIN = 'ADMIN',
+  USER = 'user',
+  ADMIN = 'admin',
 }
 
 export type AccountJWT = {

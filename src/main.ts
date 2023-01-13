@@ -1,9 +1,9 @@
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
-import { HttpExceptionFilter, TransformInterceptor } from './middleware';
+import { AppExceptionFilter, TransformInterceptor } from './middleware';
 import { setupSwagger } from './configs/swagger';
 import * as compression from 'compression';
 import * as cookieParser from 'cookie-parser';
@@ -15,13 +15,15 @@ async function bootstrap() {
   const logger = app.get(Logger);
   const version = config.get<string>('server.version');
 
+  const { httpAdapter } = app.get(HttpAdapterHost);
+
   app.setGlobalPrefix(`/${version}`);
   app.use(cookieParser());
   app.use(helmet());
   app.use(compression());
   app.useLogger(logger);
   app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
-  app.useGlobalFilters(new HttpExceptionFilter(logger));
+  app.useGlobalFilters(new AppExceptionFilter(logger, httpAdapter));
   app.useGlobalInterceptors(new LoggerErrorInterceptor(), new TransformInterceptor());
 
   logger.log(`Application running at ${process.env.NODE_ENV} mode`);

@@ -7,10 +7,12 @@ import { PassportModule } from '@nestjs/passport';
 import 'dotenv/config';
 import { ConfigService } from '@nestjs/config';
 import { AccountModule } from '../account/account.module';
+import { MailModule } from 'src/mail/mail.module';
 @Module({
   imports: [
     PassportModule,
     AccountModule,
+    MailModule,
     JwtModule.registerAsync({
       useFactory: (config: ConfigService) => {
         return {
