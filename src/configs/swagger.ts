@@ -3,8 +3,8 @@ import { DocumentBuilder, SwaggerCustomOptions, SwaggerModule } from '@nestjs/sw
 
 export const setupSwagger = (app: INestApplication, version: string): void => {
   const configDocument = new DocumentBuilder()
-    .setTitle(`Nelo Wallet Restful APIs`)
-    .setDescription(`Swagger Representation APIs using in Nelo`)
+    .setTitle(`Dutalk Restful APIs document`)
+    .setDescription(`Swagger Representation APIs using in Dutalk`)
     .setVersion(version)
     .addBearerAuth({
       type: `http`,

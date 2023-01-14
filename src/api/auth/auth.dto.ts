@@ -18,8 +18,31 @@ export class AuthSignUpDto {
 
 export class AuthSignInDto {
   @IsSwaggerString({ default: 'dulh181199@gmail.com' })
-  @IsEmail()
   credential: string;
+
+  @IsSwaggerString({ default: 'du@dev1234' })
+  password: string;
+}
+
+export class AuthVerifyAccountDTO {
+  @IsSwaggerString({ default: '181199', maxLength: 6, minLength: 6 })
+  otp: string;
+
+  @IsSwaggerString({ default: 'dulh181199@gmail.com' })
+  email: string;
+}
+
+export class AuthForgotPasswordDto {
+  @IsSwaggerString({ default: 'dulh181199@gmail.com' })
+  credential: string;
+}
+
+export class AuthResetPassword {
+  @IsSwaggerString({ default: 'dulh181199@gmail.com' })
+  credential: string;
+
+  @IsSwaggerString({ default: '250502', maxLength: 6, minLength: 6 })
+  otp: string;
 
   @IsSwaggerString({ default: 'du@dev1234' })
   password: string;

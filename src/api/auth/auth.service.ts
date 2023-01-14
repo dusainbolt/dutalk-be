@@ -1,55 +1,80 @@
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import { ERROR_CODE, IConfigJwt, IConfigRedis } from 'src/common/interfaces';
-import { Generate } from 'src/common/utils/generate.utils';
-import { JWTUtils } from 'src/common/utils/jwt.utils';
+import { Injectable } from '@nestjs/common';
+import { ERROR_CODE } from 'src/common/interfaces';
 import { Security } from 'src/common/utils/security.utils';
-import { MailService } from 'src/mail/mail.service';
 import { AppException } from 'src/middleware';
 import { AccountHelper } from '../account/account.helper.service';
-import { AuthSignInDto, AuthSignUpDto } from './auth.dto';
-import { Cache } from 'cache-manager';
+import { AccountStatus } from '../account/account.interface';
+import {
+  AuthForgotPasswordDto,
+  AuthResetPassword,
+  AuthSignInDto,
+  AuthSignUpDto,
+  AuthVerifyAccountDTO,
+} from './auth.dto';
+import { AuthHelper } from './auth.helper.service';
 @Injectable()
 export class AuthService {
-  private readonly jwt: IConfigJwt;
-  constructor(
-    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
-    private readonly jwtService: JwtService,
-    private readonly accountHelper: AccountHelper,
-    private readonly configService: ConfigService,
-    private readonly mailService: MailService,
-  ) {
-    this.jwt = this.configService.get('jwt');
-  }
+  constructor(private readonly accountHelper: AccountHelper, private readonly authHelper: AuthHelper) {}
 
   async signUp(body: AuthSignUpDto) {
     const { email, username, fullName } = body;
     // check exist
-    const userByEmailOrUsername = await this.accountHelper.findAccountWhere([{ email }, { username }]);
-    if (userByEmailOrUsername) {
-      throw new AppException(ERROR_CODE.ACCOUNT_USERNAME_EMAIL_ALREADY_REGISTER);
-    }
+    const findAccount = await this.accountHelper.findAccountWhere([{ email }, { username }]);
+    this.authHelper.isExistEmailOrUsername(findAccount);
+    // hash password
     const password = await Security.hashBcrypt(body.password);
+    // create account, send mail and return account
     const account = await this.accountHelper.insertAccount({ email, username, password, fullName });
-    const otpRegister = Generate.otp();
-    await this.cacheManager.set(Generate.keyOtp(account.id, account.username), otpRegister, {
-      ttl: this.configService.get<IConfigRedis>('redis').ttlOtp,
-    });
-    await this.mailService.sendOtpRegister(account, otpRegister);
+    await this.authHelper.generateOtpConfirmAndSendMail(account);
     return account;
   }
 
   async signIn(body: AuthSignInDto) {
     const { credential } = body;
     const account = await this.accountHelper.findAccountWhere([{ email: credential }, { username: credential }]);
-    if (!account) {
-      throw new AppException(ERROR_CODE.ACCOUNT_NOT_FOUND);
+    // check account
+    this.accountHelper.isExistAccount(account);
+    // check password
+    await this.authHelper.isMatchPassword(account, body.password);
+    // if sign but account not verify
+    if (account.status === AccountStatus.NOT_VERIFY) {
+      await this.authHelper.generateOtpConfirmAndSendMail(account);
+      throw new AppException(ERROR_CODE.ACCOUNT_NOT_VERIFIED);
     }
-    if (!(await Security.compareBcrypt(body.password, account.password))) {
-      throw new AppException(ERROR_CODE.AUTH_PASSWORD_INCORRECT);
-    }
-    const accountJWT = JWTUtils.generateAuthToken(account);
-    return this.jwtService.sign(accountJWT, { expiresIn: this.jwt.expireIns });
+    // return jwt
+    return this.authHelper.signJWT(account);
+  }
+
+  async verifyAccount(body: AuthVerifyAccountDTO) {
+    const account = await this.accountHelper.findAccount({ email: body.email });
+    // check account
+    this.accountHelper.isExistAccount(account);
+    this.accountHelper.isAccountNotVerify(account);
+    // check otp
+    await this.authHelper.verifyOtpRegister(account, body.otp);
+    // update user and return jwt
+    account.status = AccountStatus.ACTIVE;
+    await account.save();
+    return this.authHelper.signJWT(account);
+  }
+
+  async forgotPassword(body: AuthForgotPasswordDto) {
+    const { credential } = body;
+    const account = await this.accountHelper.findAccountWhere([{ email: credential }, { username: credential }]);
+    // check account
+    this.accountHelper.isExistAccount(account);
+    await this.authHelper.generateOtpForgotPasswordAndSendMail(account);
+    return true;
+  }
+
+  async resetPassword(body: AuthResetPassword) {
+    const { credential } = body;
+    const account = await this.accountHelper.findAccountWhere([{ email: credential }, { username: credential }]);
+    // check account
+    this.accountHelper.isExistAccount(account);
+    // check otp
+    await this.authHelper.verifyOtpForgotPassword(account, body.otp);
+    await this.authHelper.updatedAccountResetPassword(account, body.password);
+    return true;
   }
 }

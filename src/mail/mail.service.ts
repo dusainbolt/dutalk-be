@@ -11,15 +11,31 @@ export class MailService {
       // const url = `${this.config.get('DOMAIN_account')}/register/verify?q=${token}`;
       // const dataRedirect = `https://www.google.com/url?q=${url}&source=gmail&ust=${Date.now()}&usg=AOvVaw2rX-53uCkT68JRLD-X1qEE`;
       await this.mailerService.sendMail({
-        to: 'dulh181199@gmail.com',
+        to: account.email,
         // from: '"Support Team" <support@example.com>', // override default from
-        subject: 'Confirm your Email',
+        subject: 'Xác nhận địa chỉ email',
         template: 'confirmation', // `.hbs` extension is appended automatically
         context: {
           // ✏️ filling curly brackets with content
           fullName: account.fullName,
           otp,
           // dataRedirect,
+        },
+      });
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async sendOtpForgotPassword(account: Account, otp: any) {
+    try {
+      await this.mailerService.sendMail({
+        to: account.email,
+        subject: 'Yêu cầu thay đổi mật khẩu',
+        template: 'forgot_password', // `.hbs` extension is appended automatically
+        context: {
+          fullName: account.fullName,
+          otp,
         },
       });
     } catch (e) {
