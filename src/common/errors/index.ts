@@ -35,6 +35,16 @@ export const ERROR: Record<ERROR_CODE, AppError> = {
     message: 'Require token in cookie header',
     status: HttpStatus.UNAUTHORIZED,
   },
+  [ERROR_CODE.AUTH_NOT_FOUND_OTP]: {
+    code: '0006',
+    message: 'Not found verify otp of user',
+    status: HttpStatus.OK,
+  },
+  [ERROR_CODE.AUTH_OTP_NOT_MATCH]: {
+    code: '0007',
+    message: 'Your otp is not match',
+    status: HttpStatus.OK,
+  },
 
   // ACCOUNT 1xxx
   [ERROR_CODE.ACCOUNT_NOT_ACTIVE]: {
@@ -50,6 +60,16 @@ export const ERROR: Record<ERROR_CODE, AppError> = {
   [ERROR_CODE.ACCOUNT_NOT_FOUND]: {
     code: '1002',
     message: 'User not found',
+    status: HttpStatus.OK,
+  },
+  [ERROR_CODE.ACCOUNT_VERIFIED]: {
+    code: '1003',
+    message: 'User is verified',
+    status: HttpStatus.OK,
+  },
+  [ERROR_CODE.ACCOUNT_NOT_VERIFIED]: {
+    code: '1004',
+    message: `User isn't verified`,
     status: HttpStatus.OK,
   },
 };

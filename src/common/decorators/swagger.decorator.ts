@@ -1,15 +1,9 @@
-import {
-  applyDecorators,
-  Controller,
-  HttpStatus,
-  UseGuards,
-} from '@nestjs/common';
+import { applyDecorators, Controller, HttpStatus } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiForbiddenResponse,
   ApiProperty,
   ApiPropertyOptions,
-  ApiResponseProperty,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -35,8 +29,6 @@ import { ReasonPhrases } from 'http-status-codes';
 // import { JwtAuthGuard } from 'src/api/auth/jwt-auth.guard';
 // import { RolesGuard } from 'src/api/auth/roles.guard';
 import commonConstant, { DATE_FORMAT } from 'src/common/constant';
-import { ERROR } from '../errors';
-import { ERROR_CODE } from '../interfaces/error.interface';
 
 class UnauthorizedDataDto {
   @IsSwaggerNumber({ default: ReasonPhrases.UNAUTHORIZED }, false)
@@ -88,10 +80,10 @@ class ForbiddenDto {
   data: ForbiddenDataDto;
 }
 
-export function IsAuthController(name: string, percent = 99, isRequire = true) {
+export function IsAuthController(name: string, apiTag: string, isRequire = true) {
   return applyDecorators(
     Controller(name),
-    ApiTags(`${name} ${percent}%`),
+    ApiTags(apiTag),
     ApiBearerAuth(),
     // ...(isRequire ? [UseGuards(JwtAuthGuard, RolesGuard)] : []),
     ...(isRequire
@@ -109,10 +101,7 @@ export function IsAuthController(name: string, percent = 99, isRequire = true) {
   );
 }
 
-export function IsSwaggerString(
-  options: ApiPropertyOptions = {},
-  isRequire = true,
-) {
+export function IsSwaggerString(options: ApiPropertyOptions = {}, isRequire = true) {
   return applyDecorators(
     ApiProperty({
       type: 'string',
@@ -126,10 +115,7 @@ export function IsSwaggerString(
   );
 }
 
-export function IsSwaggerNumber(
-  options: ApiPropertyOptions = {},
-  isRequire = true,
-) {
+export function IsSwaggerNumber(options: ApiPropertyOptions = {}, isRequire = true) {
   return applyDecorators(
     ApiProperty({
       type: 'number',
@@ -144,10 +130,7 @@ export function IsSwaggerNumber(
   );
 }
 
-export function IsSwaggerArrayNumber(
-  options: ApiPropertyOptions = {},
-  isRequire = true,
-) {
+export function IsSwaggerArrayNumber(options: ApiPropertyOptions = {}, isRequire = true) {
   return applyDecorators(
     ApiProperty({
       isArray: true,
@@ -161,10 +144,7 @@ export function IsSwaggerArrayNumber(
   );
 }
 
-export function IsSwaggerBoolean(
-  options: ApiPropertyOptions = {},
-  isRequire = true,
-) {
+export function IsSwaggerBoolean(options: ApiPropertyOptions = {}, isRequire = true) {
   return applyDecorators(
     ApiProperty({
       type: 'boolean',
@@ -177,10 +157,7 @@ export function IsSwaggerBoolean(
   );
 }
 
-export function IsSwaggerDate(
-  options: ApiPropertyOptions = {},
-  isRequire = true,
-) {
+export function IsSwaggerDate(options: ApiPropertyOptions = {}, isRequire = true) {
   return applyDecorators(
     ApiProperty({
       type: 'date',
@@ -195,11 +172,7 @@ export function IsSwaggerDate(
   );
 }
 
-export function IsSwaggerEnum(
-  enumData: any,
-  options: ApiPropertyOptions = {},
-  isRequire = true,
-) {
+export function IsSwaggerEnum(enumData: any, options: ApiPropertyOptions = {}, isRequire = true) {
   return applyDecorators(
     ApiProperty({
       type: 'enum',
@@ -213,11 +186,7 @@ export function IsSwaggerEnum(
   );
 }
 
-export function IsSwaggerObject(
-  typeClass: any,
-  options: ApiPropertyOptions = {},
-  isRequire = true,
-) {
+export function IsSwaggerObject(typeClass: any, options: ApiPropertyOptions = {}, isRequire = true) {
   return applyDecorators(
     ApiProperty({
       type: typeClass,
@@ -230,11 +199,7 @@ export function IsSwaggerObject(
   );
 }
 
-export function IsSwaggerArray(
-  typeClass: any,
-  options: ApiPropertyOptions = {},
-  isRequire = true,
-) {
+export function IsSwaggerArray(typeClass: any, options: ApiPropertyOptions = {}, isRequire = true) {
   return applyDecorators(
     ApiProperty({
       isArray: true,
@@ -251,10 +216,7 @@ export function IsSwaggerArray(
   );
 }
 
-export function IsSwaggerArrayString(
-  options: ApiPropertyOptions = {},
-  isRequire = true,
-) {
+export function IsSwaggerArrayString(options: ApiPropertyOptions = {}, isRequire = true) {
   return applyDecorators(
     ApiProperty({
       isArray: true,
@@ -268,10 +230,7 @@ export function IsSwaggerArrayString(
   );
 }
 
-export function IsSwaggerUpload(
-  options: ApiPropertyOptions = {},
-  isRequire = false,
-) {
+export function IsSwaggerUpload(options: ApiPropertyOptions = {}, isRequire = false) {
   return applyDecorators(
     ApiProperty({ type: 'string', format: 'binary', ...options }),
     IsSwaggerString(options, isRequire),

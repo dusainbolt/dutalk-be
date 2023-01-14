@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ERROR_CODE } from 'src/common/interfaces';
 import { Account } from 'src/entities/account.entity';
+import { AppException } from 'src/middleware';
 import { DeepPartial, FindOptionsWhere, Repository } from 'typeorm';
+import { AccountStatus } from './account.interface';
 
 @Injectable()
 export class AccountHelper {
@@ -18,4 +21,16 @@ export class AccountHelper {
   async insertAccount(data: DeepPartial<Account>): Promise<Account> {
     return await this.accountRepo.save(data);
   }
+
+  isExistAccount = (account: Account) => {
+    if (!account) {
+      throw new AppException(ERROR_CODE.ACCOUNT_NOT_FOUND);
+    }
+  };
+
+  isAccountNotVerify = (account: Account) => {
+    if (account.status !== AccountStatus.NOT_VERIFY) {
+      throw new AppException(ERROR_CODE.ACCOUNT_VERIFIED);
+    }
+  };
 }
